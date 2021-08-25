@@ -2,6 +2,7 @@ package sr.unasat.money.exchange.simulator.datastructures.implementation;
 
 import sr.unasat.money.exchange.simulator.datastructures.adt.DijkstraGraph;
 import sr.unasat.money.exchange.simulator.datastructures.adt.List;
+import sr.unasat.money.exchange.simulator.datastructures.adt.Stack;
 import sr.unasat.money.exchange.simulator.entities.*;
 
 public class WeightedDirectedDijkstraGraphMinExpenses implements DijkstraGraph {
@@ -64,9 +65,9 @@ public class WeightedDirectedDijkstraGraphMinExpenses implements DijkstraGraph {
         nTree = 1;                     // put it in tree
 
         // transfer row of distances from adjMat to sPath
-        for (int colimnIndex = 0; colimnIndex < nVerts; colimnIndex++) {
-            double tempDist = adjMat[startTree][colimnIndex];
-            sPath[colimnIndex] = new DistPar(startTree, tempDist);
+        for (int columnIndex = 0; columnIndex < nVerts; columnIndex++) {
+            double tempDist = adjMat[startTree][columnIndex];
+            sPath[columnIndex] = new DistPar(startTree, tempDist);
         }
 
         // until all vertices are in the tree
@@ -91,7 +92,6 @@ public class WeightedDirectedDijkstraGraphMinExpenses implements DijkstraGraph {
         }  // end while(nTree<nVerts)
 
         displayPaths();                // display sPath[] contents
-
         nTree = 0;                     // clear tree
         for (int vertexIndex = 0; vertexIndex < nVerts; vertexIndex++) {
             vertexList.get(vertexIndex).setInTree(false);
@@ -148,19 +148,43 @@ public class WeightedDirectedDijkstraGraphMinExpenses implements DijkstraGraph {
     @Override
     public void displayPaths() {
 
-        System.out.println("");
-
+        System.out.println();
+        Stack stack = new StackDfsImpl();
         for (int vertexIndex = 0; vertexIndex < nVerts; vertexIndex++) // display contents of sPath[]
         {
-            System.out.print(vertexList.get(vertexIndex).getLocatie() + "=");
+            int parentVert = sPath[vertexIndex].getParentVert();
+            int tempParent = parentVert;
+            while (true){
+                if (!stack.isEmpty()){
+                    int tempParentIndex = sPath[tempParent].getParentVert();
+                    String locationOne = vertexList.get(stack.peek()).getLocatie().toString();
+                    String currentLocation = vertexList.get(tempParent).getLocatie().toString();
+                    if (!locationOne.equals(currentLocation)){
+                        stack.push(tempParent);
+                        tempParent = tempParentIndex;
+                    } else {
+                        break;
+                    }
+                } else {
+                    stack.push(tempParent);
+                    int tempParentIndex = sPath[tempParent].getParentVert();
+                    tempParent = tempParentIndex;
+                }
+            }
+
+            String destination = vertexList.get(vertexIndex).getLocatie().toString();
+            System.out.print(destination + "=");
             if (sPath[vertexIndex].getDistance() == INFINITY) {
-                System.out.print("inf");                  // inf
+                System.out.print(" (inf) | ");                  // inf
+
+            } else {
+                System.out.print(" (USD "+sPath[vertexIndex].getDistance()+ ") | ");
+
             }
-            else {
-                System.out.print(" USD "+sPath[vertexIndex].getDistance());
+            while (!stack.isEmpty()){
+                System.out.print(vertexList.get(stack.pop()).getLocatie() + " => ");
             }
-            Locatie parent = vertexList.get(sPath[vertexIndex].getParentVert()).getLocatie();
-            System.out.println(" ( via " + parent + ") ");
+            System.out.println(destination);
         }
 
     }

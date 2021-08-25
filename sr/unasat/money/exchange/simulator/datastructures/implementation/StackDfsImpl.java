@@ -4,7 +4,7 @@ import sr.unasat.money.exchange.simulator.datastructures.adt.Stack;
 
 public class StackDfsImpl implements Stack {
 
-    private final int SIZE = 20;
+    private final int SIZE = 1000;
     private int[] st;
     private int top;
 

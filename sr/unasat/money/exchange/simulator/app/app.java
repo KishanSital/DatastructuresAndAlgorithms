@@ -22,8 +22,8 @@ public class app {
         vertexList.add(new Vertex(new Locatie("Watermolenstraat ")));//7
 
 
-        int startingLocationIndex = 0;
-        int destinationLocationIndex = 4;
+        int startingFromNiewNickerie = 0;
+        int destinationIsKasabaholo = 4;
 
         DfsGraph dfsGraph = new DfsGraphImpl();
         dfsGraph.addVertexList(vertexList);
@@ -47,9 +47,9 @@ public class app {
 
 
         System.out.println();
-        System.out.println("Depth first search to : " + vertexList.get(destinationLocationIndex).getLocatie());
+        System.out.println("Depth first search to : " + vertexList.get(destinationIsKasabaholo).getLocatie());
 
-        dfsGraph.dfs(startingLocationIndex, destinationLocationIndex);             // depth-first search
+        dfsGraph.dfs(startingFromNiewNickerie, destinationIsKasabaholo);             // depth-first search
 
         System.out.println("\n\n");
 
@@ -76,7 +76,7 @@ public class app {
 
         System.out.println("Breadth first search\n");
 
-        bfsGraph.bfs(startingLocationIndex);
+        bfsGraph.bfs(startingFromNiewNickerie);
 
         System.out.println("\n\n");
 
@@ -115,7 +115,7 @@ public class app {
 
         System.out.println();
         System.out.println("Routes to take if you'd like to have the least expenses\n");
-        mstwGraph.mstw(startingLocationIndex);
+        mstwGraph.mstw(startingFromNiewNickerie);
         System.out.print("Total weight consists of: ");
         mstwGraph.getTotal();
 
@@ -157,7 +157,7 @@ public class app {
 
         System.out.println();
         System.out.println("Routes to take if you'd like to have the least money left over after exchanging money and taking the expenses into consideration\n");
-        mstwGraph.mstw(startingLocationIndex);
+        mstwGraph.mstw(startingFromNiewNickerie);
         System.out.print("Total weight consists of: ");
         mstwGraph.getTotal();
 
@@ -200,7 +200,7 @@ public class app {
         System.out.println();
         System.out.println("Displaying the paths where the expenses are at their highest to travel from location to location\n");
 
-        dijkstraGraph.path(startingLocationIndex);
+        dijkstraGraph.path(startingFromNiewNickerie);
 
         System.out.println("\n\n");
         System.out.println("----------------------------------------------------------------------------------------------------------");
@@ -242,7 +242,7 @@ public class app {
         System.out.println();
         System.out.println("Displaying the paths where the left over money will be the highest after exchanging and subtracting the expenses from it whilst traveling from location to location");
 
-        dijkstraGraph.path(startingLocationIndex);
+        dijkstraGraph.path(startingFromNiewNickerie);
         System.out.println("\n\n");
         System.out.println("----------------------------------------------------------------------------------------------------------");
 
@@ -282,7 +282,7 @@ public class app {
         System.out.println();
         System.out.println("Displaying the paths where the expenses will be the least whilst traveling from location to location");
 
-        dijkstraGraph.path(startingLocationIndex);
+        dijkstraGraph.path(startingFromNiewNickerie);
         System.out.println("\n\n");
 
         System.out.println("----------------------------------------------------------------------------------------------------------");
@@ -327,7 +327,7 @@ public class app {
         System.out.println("Displaying the paths where the left over money will be the least after subtracting the expenses from it whilst traveling from location to location");
 
 
-        dijkstraGraph.path(startingLocationIndex);
+        dijkstraGraph.path(startingFromNiewNickerie);
 
     }
 }

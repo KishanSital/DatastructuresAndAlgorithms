@@ -2,6 +2,7 @@ package sr.unasat.money.exchange.simulator.datastructures.implementation;
 
 import sr.unasat.money.exchange.simulator.datastructures.adt.DijkstraGraph;
 import sr.unasat.money.exchange.simulator.datastructures.adt.List;
+import sr.unasat.money.exchange.simulator.datastructures.adt.Stack;
 import sr.unasat.money.exchange.simulator.entities.*;
 
 public class WeightedDirectedDijkstraGraphMaxLeftOver implements DijkstraGraph {
@@ -99,7 +100,7 @@ public class WeightedDirectedDijkstraGraphMaxLeftOver implements DijkstraGraph {
             adjust_sPath();             // update sPath[] array
         }  // end while(nTree<nVerts)
 
-        displayPaths();                // display sPath[] contents
+        displayPaths();
 
         nTree = 0;                     // clear tree
         for (int vertexIndex = 0; vertexIndex < nVerts; vertexIndex++)
@@ -157,60 +158,46 @@ public class WeightedDirectedDijkstraGraphMaxLeftOver implements DijkstraGraph {
 
     @Override
     public void displayPaths() {
-
-        System.out.println("");
-
+        System.out.println();
+        Stack stack = new StackDfsImpl();
         for (int vertexIndex = 0; vertexIndex < nVerts; vertexIndex++) // display contents of sPath[]
         {
-            System.out.print(vertexList.get(vertexIndex).getLocatie() + "=");
-            if (sPath[vertexIndex].getDistance() == INFINITY)
-            {
-                System.out.print("inf");                  // inf
+            int parentVert = sPath[vertexIndex].getParentVert();
+            int tempParent = parentVert;
+            while (true){
+                if (!stack.isEmpty()){
+                    int tempParentIndex = sPath[tempParent].getParentVert();
+                    String locationOne = vertexList.get(stack.peek()).getLocatie().toString();
+                    String currentLocation = vertexList.get(tempParent).getLocatie().toString();
+                    if (!locationOne.equals(currentLocation)){
+                        stack.push(tempParent);
+                        tempParent = tempParentIndex;
+                    } else {
+                        break;
+                    }
+                } else {
+                    stack.push(tempParent);
+                    int tempParentIndex = sPath[tempParent].getParentVert();
+                    tempParent = tempParentIndex;
+                }
+            }
+
+            String destination = vertexList.get(vertexIndex).getLocatie().toString();
+            System.out.print(destination + "=");
+            if (sPath[vertexIndex].getDistance() == INFINITY) {
+                System.out.print(" (inf) | ");                  // inf
+
+            } else {
+                System.out.print(" (USD "+-sPath[vertexIndex].getDistance()+ ") | ");
 
             }
-            else {
-                System.out.print(" USD "+-sPath[vertexIndex].getDistance());
+            while (!stack.isEmpty()){
+                System.out.print(vertexList.get(stack.pop()).getLocatie() + " => ");
             }
-            Locatie parent = vertexList.get(sPath[vertexIndex].getParentVert()).getLocatie();
-            System.out.println(" ( via " + parent + ") ");
+            System.out.println(destination);
         }
     }
 
-    public static void main(String[] args) {
-        DijkstraGraph dijkstraGraph = new WeightedDirectedDijkstraGraphMaxLeftOver(1,
-                100000,
-                1,
-                1);
-
-
-        dijkstraGraph.addVertex(new Vertex(new Locatie("Nieuw nickerie "))); //0
-        dijkstraGraph.addVertex(new Vertex(new Locatie("Coppename punt "))); //1
-        dijkstraGraph.addVertex(new Vertex(new Locatie("Pomona "))); //2
-        dijkstraGraph.addVertex(new Vertex(new Locatie("Leiding 9A "))); //3
-        dijkstraGraph.addVertex(new Vertex(new Locatie("Kasabaholo "))); //4
-        dijkstraGraph.addVertex(new Vertex(new Locatie("Garnizoenspad "))); //5
-        dijkstraGraph.addVertex(new Vertex(new Locatie("Kwarasan "))); //6
-        dijkstraGraph.addVertex(new Vertex(new Locatie("Watermolenstraat "))); //7
-
-        dijkstraGraph.addEdge(0, 1, new Weight(1, 1, (new Cambio(100, "Cambio nick-copp")))); //nick -> copp
-        dijkstraGraph.addEdge(0, 2, new Weight(1, 1, (new Cambio(200, "Cambio nick-pomona")))); // nick -> pomona
-        dijkstraGraph.addEdge(1, 2, new Weight(1, 1, (new Cambio(300, "Cambio copp-pomona")))); // copp ->pomona
-        dijkstraGraph.addEdge(1, 5, new Weight(1, 1, (new Cambio(400, "Cambio copp-garnizoenspad")))); // copp -> garnizoenspad
-        dijkstraGraph.addEdge(2, 5, new Weight(1, 1, (new Cambio(500, "Cambio pomona-garnizoenspad")))); // pomona -> garnizoenspad
-        dijkstraGraph.addEdge(2, 4, new Weight(1, 1, (new Cambio(600, "Cambio pomona-kasabaholo")))); // pomona -> kasabaholo
-        dijkstraGraph.addEdge(2, 3, new Weight(1, 1, (new Cambio(700, "Cambio pomona-leiding 9A")))); // pomona -> leiding 9A
-        dijkstraGraph.addEdge(3, 6, new Weight(1, 1, (new Cambio(800, "Cambio leiding 9A-kwarasan")))); // leiding 9 A -> kwarasan
-        dijkstraGraph.addEdge(4, 1, new Weight(1, 1, (new Cambio(900, "Cambio kasabaholo-copp")))); // kasabaholo -> copp
-        dijkstraGraph.addEdge(4, 3, new Weight(1, 1, (new Cambio(1000, "Cambio kasabaholo-leiding 9A")))); // kasabaholo -> leiding 9A
-        dijkstraGraph.addEdge(4, 6, new Weight(1, 1, (new Cambio(1100, "Cambio kasabaholo-kwarasan")))); // kasabaholo -> kwarasan
-        dijkstraGraph.addEdge(4, 7, new Weight(1, 1, (new Cambio(1200, "Cambio kasabaholo-watermolenstraat")))); // kasabaholo -> watermolenstraat
-        dijkstraGraph.addEdge(5, 7, new Weight(1, 1, (new Cambio(1300, "Cambio garnizoenspad-watermolenstraat")))); // garnizoenspad -> watermolenstraat
-        dijkstraGraph.addEdge(5, 4, new Weight(1, 1, (new Cambio(1400, "Cambio garnizoenspad-kasabaholo")))); // garnizoenspad -> kasabaholo
-        dijkstraGraph.addEdge(7, 6, new Weight(1, 1, (new Cambio(1500, "Cambio watermolenstraat-kwarasan")))); // watermolenstraat -> kwarasan
-
-
-        dijkstraGraph.path(0);
-    }
 
     @Override
     public double[][] getEdges() {

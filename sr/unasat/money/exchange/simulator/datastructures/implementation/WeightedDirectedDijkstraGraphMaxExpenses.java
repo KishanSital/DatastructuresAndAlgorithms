@@ -2,6 +2,7 @@ package sr.unasat.money.exchange.simulator.datastructures.implementation;
 
 import sr.unasat.money.exchange.simulator.datastructures.adt.DijkstraGraph;
 import sr.unasat.money.exchange.simulator.datastructures.adt.List;
+import sr.unasat.money.exchange.simulator.datastructures.adt.Stack;
 import sr.unasat.money.exchange.simulator.entities.*;
 
 public class WeightedDirectedDijkstraGraphMaxExpenses implements DijkstraGraph {
@@ -153,21 +154,42 @@ public class WeightedDirectedDijkstraGraphMaxExpenses implements DijkstraGraph {
 
     @Override
     public void displayPaths() {
-
-        System.out.println("");
-
+        Stack stack = new StackDfsImpl();
         for (int vertexIndex = 0; vertexIndex < nVerts; vertexIndex++) // display contents of sPath[]
         {
-            System.out.print(vertexList.get(vertexIndex).getLocatie() + "=");
+            int parentVert = sPath[vertexIndex].getParentVert();
+            int tempParent = parentVert;
+            while (true){
+                if (!stack.isEmpty()){
+                    int tempParentIndex = sPath[tempParent].getParentVert();
+                    String locationOne = vertexList.get(stack.peek()).getLocatie().toString();
+                    String currentLocation = vertexList.get(tempParent).getLocatie().toString();
+                    if (!locationOne.equals(currentLocation)){
+                        stack.push(tempParent);
+                        tempParent = tempParentIndex;
+                    } else {
+                        break;
+                    }
+                } else {
+                    stack.push(tempParent);
+                    int tempParentIndex = sPath[tempParent].getParentVert();
+                    tempParent = tempParentIndex;
+                }
+            }
+
+            String destination = vertexList.get(vertexIndex).getLocatie().toString();
+            System.out.print(destination + "=");
             if (sPath[vertexIndex].getDistance() == INFINITY) {
-                System.out.print("inf ");                  // inf
+                System.out.print(" (inf) | ");                  // inf
 
             } else {
-                System.out.print("USD "+-sPath[vertexIndex].getDistance());
+                System.out.print(" (USD "+-sPath[vertexIndex].getDistance()+ ") | ");
 
             }
-            Locatie parent = vertexList.get(sPath[vertexIndex].getParentVert()).getLocatie();
-            System.out.println(" ( via " + parent + ") ");
+            while (!stack.isEmpty()){
+                System.out.print(vertexList.get(stack.pop()).getLocatie() + " => ");
+            }
+            System.out.println(destination);
         }
     }
 
